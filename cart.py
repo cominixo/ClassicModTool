@@ -85,6 +85,21 @@ class Cart:
 
         return map_arr[y:y+(LEVEL_SIZE*SPRITE_SIZE), x:x+(LEVEL_SIZE*SPRITE_SIZE)]
 
+    def get_tile(self, level, tile_x, tile_y) -> str:
+        if level > 15:
+
+            level -= 16
+            celeste_map = self._extended_map.split("\n")
+        else:
+            celeste_map = self._map.split("\n")[1:]
+
+        level_y, level_x = divmod(level, 8)
+
+        tile_x += (16*level_x)
+        tile_y += (16*level_y)
+
+        return celeste_map[tile_y][tile_x*2:tile_x*2+2]
+
     def edit_tile(self, sprite, level, tile_x, tile_y):
         
 
@@ -103,16 +118,12 @@ class Cart:
 
         level_y, level_x = divmod(level, 8)
 
-        print(level)
-
         tile_x += (16*level_x)
         tile_y += (16*level_y)
-
-        print(tile_x, tile_y)
-        print(level_x, level_y)
-
-
-        if celeste_map[tile_y][tile_x*2:tile_x*2 + 2] == sprite_hex:
+        try:
+            if celeste_map[tile_y][tile_x*2:tile_x*2 + 2] == sprite_hex:
+                return
+        except IndexError:
             return
 
 

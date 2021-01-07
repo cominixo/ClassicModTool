@@ -31,5 +31,6 @@ class SpriteLabel(QLabel):
 
     def mousePressEvent(self, event):
         self.parent().parent().selected_sprite = self.spriteid
+        self.parent().parent().setSelecting()
         print(self.spriteid)
 

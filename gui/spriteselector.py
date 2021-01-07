@@ -25,6 +25,8 @@ class SpriteSelector(QLabel):
         self.setStyleSheet("background-color: #1D2B53;")
         self.layout.setHorizontalSpacing(0)
 
+        
+
         self.setLayout(self.layout)
 
 
@@ -33,8 +35,6 @@ class SpriteSelector(QLabel):
         self.load_pages()
 
     def load_pages(self):
-
-        #loaded_sprites = 0
 
         selected_tab = default_values.objects
 
