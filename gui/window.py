@@ -42,6 +42,11 @@ class Window(QWidget):
 
         self.setMouseTracking(True)
 
+
+        self.saveSc = QShortcut(QKeySequence('Ctrl+S'), self)
+
+        self.saveSc.activated.connect(self.save_cart)
+
         self.layout = QGridLayout()
 
         
@@ -60,6 +65,7 @@ class Window(QWidget):
         self.show()
 
     def setSelecting(self):
+        self.selected_tiles = []
         self.selecting ^= True
 
     def nextLevel(self, event):
@@ -94,8 +100,12 @@ class Window(QWidget):
                     paste_y, paste_x = idx[0] + tile_y, idx[1] + tile_x
                     self.draw_tile(sprite, paste_x, paste_y)
 
-                self.selected_tiles = []
                 self.selection_box = QRect()
+                pix = self.leveldisplay.pixmap()
+                qp = QPainter(pix)
+                qp.eraseRect(0, 0, pix.width(), pix.height())
+                qp.drawPixmap(QPoint(0,0), self.scale_pixmap())
+                self.leveldisplay.setPixmap(pix)
                 return
 
             if not self.dragging_box:
@@ -110,7 +120,6 @@ class Window(QWidget):
 
     def mouseReleaseEvent(self, event):
 
-        
         if self.selecting:
             if self.dragging_box:
                 if self.selection_box.topLeft().y() > self.selection_box.bottomRight().y():
@@ -170,7 +179,7 @@ class Window(QWidget):
         if self.selecting and self.selected_tiles == []:
             
             br = QBrush()  
-            qp.setPen(Qt.red)
+            qp.setPen(Qt.gray)
             boxscaled = QRect()
            
             boxscaled.setX( self.selection_box.x()*pixels_per_tile)
@@ -179,17 +188,24 @@ class Window(QWidget):
             boxscaled.setWidth( self.selection_box.width()*pixels_per_tile)
 
             qp.drawRect(boxscaled)
+        elif self.selecting:
+            for idx, sprite in np.ndenumerate(self.selected_tiles):
+                paste_y, paste_x = idx[0] + tile_y, idx[1] + tile_x
+                qimg = self.qimage_from_image(self.cart.get_sprite(sprite))
+                qimg = qimg.scaled(QSize(rect.width(), rect.height()))
+                pixmap =  QPixmap().fromImage(qimg)
+                qp.setOpacity(0.5)
+                qp.drawPixmap(QPoint(paste_x*pixels_per_tile, paste_y*pixels_per_tile),pixmap)
         else:
-            img = np.array(self.cart.get_sprite(self.selected_sprite))
-            height, width, channel = img.shape
-            bytesPerLine = 3 * width
-            qimg = QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)
-            qimg = qimg.scaled(QSize(rect.width(), rect.height()))
+            img = self.cart.get_sprite(self.selected_sprite)
+            
             qp.setOpacity(0.5)
 
-            qp.drawPixmap(QPoint(tile_x*pixels_per_tile, tile_y*pixels_per_tile), QPixmap().fromImage(qimg))
-        
+            qimg = self.qimage_from_image(img)
+            qimg = qimg.scaled(QSize(rect.width(), rect.height()))
 
+            qp.drawPixmap(QPoint(tile_x*pixels_per_tile, tile_y*pixels_per_tile), QPixmap.fromImage(qimg))
+        
 
 
         self.leveldisplay.setPixmap(pix)
@@ -203,12 +219,9 @@ class Window(QWidget):
     def draw_tile(self, sprite, tile_x, tile_y):
         qp = QPainter(self.leveldisplay.level_pixmap)
 
-        img = np.array(self.cart.get_sprite(sprite))
-        height, width, channel = img.shape
-        bytesPerLine = 3 * width
-        qimg = QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)
-
-        qp.drawPixmap(QPoint(tile_x*8, tile_y*8), QPixmap().fromImage(qimg))
+        img = self.cart.get_sprite(sprite)
+        qimg = self.qimage_from_image(img)
+        qp.drawPixmap(QPoint(tile_x*8, tile_y*8), QPixmap.fromImage(qimg))
 
         self.cart.edit_tile(sprite, self.selected_level, tile_x, tile_y)
         
@@ -231,6 +244,20 @@ class Window(QWidget):
         if mouse_pos.x() > self.leveldisplay.pixmap().width() or mouse_pos.y() > self.leveldisplay.pixmap().height() or mouse_pos.x() < 0 or mouse_pos.y() < 0:
            return
         self.selection_box.setBottomRight(QPoint(tile_x, tile_y))
+
+    def qimage_from_image(self, image) -> QImage:
+        img = np.array(image)
+        height, width, channel = img.shape
+        bytesPerLine = 3 * width
+        qimg = QImage(img.data, width, height, bytesPerLine, QImage.Format_RGB888)
+        
+        return qimg
+
+    def save_cart(self):
+        cart = self.cart.save()
+        with open("saved.p8", "w+") as f:
+            f.write(cart)
+        
             
 
         

@@ -36,17 +36,13 @@ class SpriteSelector(QLabel):
 
     def load_pages(self):
 
-        selected_tab = default_values.objects
 
         for sprite in self.shown_sprites:
             self.layout.removeWidget(sprite)
 
         self.shown_sprites = []
-
-        if self.parent().selected_sprite_tab == 1:
-            selected_tab = default_values.blocks
-        elif self.parent().selected_sprite_tab == 2:
-            selected_tab = default_values.background
+        selected_tab = default_values.categories_map[self.parent().selected_sprite_tab]
+ 
 
         for loaded_sprites in range(len(selected_tab)):
          

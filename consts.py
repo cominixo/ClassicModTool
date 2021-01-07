@@ -8,3 +8,7 @@ LEVEL_SIZE = 16
 
 # measured in levels
 MAP_WIDTH = 8
+
+# arbitrary version number, doesn't matter
+P8_HEADER = """pico-8 cartridge // http://www.pico-8.com
+version 10\n"""

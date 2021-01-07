@@ -21,12 +21,16 @@ class Cart:
 
         
     def split_cart(self):
+        self._lua = self.get_cart_section("lua")
         self._gfx = self.get_cart_section("gfx")
         self._gff = self.get_cart_section("gff")
+        self._label = self.get_cart_section("label").strip() + "\n"
         self._map = self.get_cart_section("map")
+        self._sfx = self.get_cart_section("sfx")
+        self._music = self.get_cart_section("music")
+
         self._extended_map = "".join(self._gfx.split("\n")[(SPRITESHEET_SIZE//2)+1:])
         
-
 
     def get_cart_section(self, section) -> str:
         section = f"__{section}__"
@@ -39,6 +43,10 @@ class Cart:
         for y in range(len(lines)):
             for x in range(len(lines[y])):
                 self.loaded_spritesheet[x,y] = P8_COLORS[int(lines[x][y], 16)]
+
+    def save(self):
+        self._gfx += "\n"
+        return P8_HEADER + self._lua + self._gfx + self._gff + self._label + self._map + self._sfx + self._music 
 
     def get_sprite(self, id) -> Image:
         y, x = divmod(id, SPRITESHEET_SIZE//SPRITE_SIZE)
