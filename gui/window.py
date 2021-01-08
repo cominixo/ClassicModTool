@@ -70,6 +70,7 @@ class Window(QWidget):
     def setSelecting(self):
         self.selected_tiles = []
         self.selecting ^= True
+        return self.selecting
 
     def nextLevel(self, event):
         self.selected_level += 1
@@ -103,7 +104,9 @@ class Window(QWidget):
                     paste_y, paste_x = idx[0] + tile_y, idx[1] + tile_x
                     self.draw_tile(sprite, paste_x, paste_y)
                 # TODO don't reset selected_tiles if holding shift
-                self.selected_tiles = []
+                modifiers = QApplication.keyboardModifiers()
+                if modifiers != Qt.ShiftModifier:
+                    self.selected_tiles = []
                 self.selection_box = QRect()
                 pix = self.leveldisplay.pixmap()
                 qp = QPainter(pix)
@@ -173,7 +176,6 @@ class Window(QWidget):
 
         
         if self.drawing:
-            print(self.selected_sprite_alt)
             if self.button_held == Qt.LeftButton:
                 self.draw_tile(self.selected_sprite, tile_x, tile_y)
             elif self.button_held == Qt.RightButton:

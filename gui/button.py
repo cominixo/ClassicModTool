@@ -7,23 +7,36 @@ class Button(QLabel):
         super(Button, self).__init__(parent)
         self.image_pixmap = QPixmap(image_path).scaled(40,40)
         self.draw_image()
+        self.selected = False
         self.on_click = on_click
         self.resize(self.image_pixmap.width(),self.image_pixmap.height())
     
     def mousePressEvent(self, event):
-        self.on_click()
+       
+        self.selected = self.on_click()
+        self.draw_image()
+        if self.selected:
+            self.drawRect(QColor("#C2C3C7"))
+
     
     def draw_image(self):
         self.setPixmap(self.image_pixmap)
 
     def leaveEvent(self, event):
-        self.draw_image()
-        return self.parent().leaveEvent(event)
+        if not self.selected:
+            self.draw_image()
+            return self.parent().leaveEvent(event)
 
     def enterEvent(self, event):
+        if not self.selected:
+            pix = self.drawRect(QColor("#FFF1E8"))
+            self.setPixmap(pix)
+            return self.parent().enterEvent(event)
+
+    def drawRect(self, color):
         pix = self.pixmap()
         qp = QPainter(pix)
-        pen = QPen(Qt.white)
+        pen = QPen(color)
         pen.setWidth(5)
         qp.setPen(pen)
         rect = self.rect()
@@ -32,7 +45,7 @@ class Button(QLabel):
         qp.drawRect(rect)
         
         qp.end()
-        self.setPixmap(pix)
-        return self.parent().enterEvent(event)
+
+        return pix
 
 
