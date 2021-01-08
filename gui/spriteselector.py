@@ -16,6 +16,8 @@ class SpriteSelector(QLabel):
         self.setAlignment(Qt.AlignLeft)
         self.setFixedWidth(150)
 
+        self.all_sprites = [SpriteLabel(self, i) for i in range(128)]
+
         self.shown_sprites = []
 
         self.layout = QGridLayout()
@@ -36,21 +38,16 @@ class SpriteSelector(QLabel):
 
     def load_pages(self):
 
+        for sprite in self.all_sprites:
+            sprite.setVisible(False)
 
-        for sprite in self.shown_sprites:
-            self.layout.removeWidget(sprite)
-
-        self.shown_sprites = []
         selected_tab = default_values.categories_map[self.parent().selected_sprite_tab]
  
-
         for loaded_sprites in range(len(selected_tab)):
          
-            
-            sprite = SpriteLabel(self, selected_tab[loaded_sprites])
+            sprite = self.all_sprites[selected_tab[loaded_sprites]]
 
-            self.shown_sprites.append(sprite)
-
+            sprite.setVisible(True)
             self.layout.addWidget(sprite,loaded_sprites%20, loaded_sprites//20)
 
 

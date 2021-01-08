@@ -21,9 +21,10 @@ class Window(QWidget):
         self.dragging_box = False
         self.selection_box = QRect()
 
-        self.cart = Cart("celeste.p8")
+        self.cart = Cart("carts/celeste.p8")
 
         self.selected_sprite = 1
+        self.selected_sprite_alt = 0
         self.selected_level = 0
         self.selected_sprite_tab = 0
         self.selected_tiles = []
@@ -48,6 +49,8 @@ class Window(QWidget):
         self.saveSc.activated.connect(self.save_cart)
 
         self.layout = QGridLayout()
+
+        self.button_held = 0
 
         
         self.layout.setVerticalSpacing(0)
@@ -114,9 +117,14 @@ class Window(QWidget):
                 return
 
         
+        else:
+            if event.button() == Qt.LeftButton:
+                self.draw_tile(self.selected_sprite, tile_x, tile_y)
+            elif event.button() == Qt.RightButton:
+                self.draw_tile(self.selected_sprite_alt, tile_x, tile_y)
 
-        self.draw_tile(self.selected_sprite, tile_x, tile_y)
-        self.drawing = True
+            self.button_held = event.button()
+            self.drawing = True
 
     def mouseReleaseEvent(self, event):
 
@@ -164,8 +172,11 @@ class Window(QWidget):
 
         
         if self.drawing:
-            
-            self.draw_tile(self.selected_sprite, tile_x, tile_y)
+            print(self.selected_sprite_alt)
+            if self.button_held == Qt.LeftButton:
+                self.draw_tile(self.selected_sprite, tile_x, tile_y)
+            elif self.button_held == Qt.RightButton:
+                self.draw_tile(self.selected_sprite_alt, tile_x, tile_y)
 
         
         qp = QPainter(pix)
