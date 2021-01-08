@@ -102,7 +102,8 @@ class Window(QWidget):
                 for idx, sprite in np.ndenumerate(self.selected_tiles):
                     paste_y, paste_x = idx[0] + tile_y, idx[1] + tile_x
                     self.draw_tile(sprite, paste_x, paste_y)
-
+                # TODO don't reset selected_tiles if holding shift
+                self.selected_tiles = []
                 self.selection_box = QRect()
                 pix = self.leveldisplay.pixmap()
                 qp = QPainter(pix)
@@ -145,7 +146,7 @@ class Window(QWidget):
                             break
 
                         tiles[y][x] = int(self.cart.get_tile(self.selected_level, tile_x, tile_y),16)
-                        
+                
                 self.selected_tiles = tiles
                 self.dragging_box = False
                 return
@@ -189,8 +190,11 @@ class Window(QWidget):
 
         if self.selecting and self.selected_tiles == []:
             
-            br = QBrush()  
-            qp.setPen(Qt.gray)
+            br = QBrush()
+            pen = QPen(QColor("#C2C3C7"))
+            pen.setWidth(5)
+            pen.setStyle(Qt.DashLine)
+            qp.setPen(pen)
             boxscaled = QRect()
            
             boxscaled.setX( self.selection_box.x()*pixels_per_tile)
