@@ -49,18 +49,22 @@ class Window(QWidget):
 
 
         self.saveSc = QShortcut(QKeySequence('Ctrl+S'), self)
-
         self.saveSc.activated.connect(self.save_cart)
+
+        self.selectSc = QShortcut(QKeySequence('Shift+S'), self)
+        self.selectSc.activated.connect(self.setSelecting)
 
         self.layout = QGridLayout()
 
         self.button_held = 0
 
+        self.selection_button = Button(self, "assets/selection_button", self.setSelecting)
+
         
         self.layout.setVerticalSpacing(0)
         self.layout.addWidget(SpriteTab(self), 0, 1)
         self.layout.addWidget(self.spriteselector,1,1)
-        self.layout.addWidget(Button(self, "assets/selection_button", self.setSelecting), 2, 1)
+        self.layout.addWidget(self.selection_button, 2, 1)
         self.layout.addWidget(self.leveldisplay,1,2,2,2)
         self.layout.addWidget(self.button_next,3,3)
         self.layout.addWidget(self.button_back,3,2)
@@ -74,6 +78,10 @@ class Window(QWidget):
     def setSelecting(self):
         self.selected_tiles = []
         self.selecting ^= True
+        self.selection_button.draw_image()
+        if self.selecting:
+            self.selection_button.drawRect(QColor("#C2C3C7"))
+
         return self.selecting
 
     def nextLevel(self, event):

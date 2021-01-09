@@ -14,9 +14,6 @@ class Button(QLabel):
     def mousePressEvent(self, event):
        
         self.selected = self.on_click()
-        self.draw_image()
-        if self.selected:
-            self.drawRect(QColor("#C2C3C7"))
 
     
     def draw_image(self):
