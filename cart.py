@@ -105,8 +105,10 @@ class Cart:
 
         tile_x += (16*level_x)
         tile_y += (16*level_y)
-
-        return celeste_map[tile_y][tile_x*2:tile_x*2+2]
+        str_value = celeste_map[tile_y][tile_x*2:tile_x*2+2]
+        if not str_value:
+            return "0"
+        return str_value
 
     def edit_tile(self, sprite, level, tile_x, tile_y):
         

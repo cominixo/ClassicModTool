@@ -10,6 +10,7 @@ from gui.spriteselector import SpriteSelector
 from gui.spritetab import SpriteTab
 from gui.button import Button
 from cart import Cart
+import default_values
 
 
 class Window(QWidget):
@@ -28,6 +29,9 @@ class Window(QWidget):
         self.selected_level = 0
         self.selected_sprite_tab = 0
         self.selected_tiles = []
+
+        # TODO see if right clicking works while holding left click
+        self.autotiled_blocks = []
 
         self.leveldisplay = LevelDisplay(self)
         self.spriteselector = SpriteSelector(self)
@@ -103,7 +107,6 @@ class Window(QWidget):
                 for idx, sprite in np.ndenumerate(self.selected_tiles):
                     paste_y, paste_x = idx[0] + tile_y, idx[1] + tile_x
                     self.draw_tile(sprite, paste_x, paste_y)
-                # TODO don't reset selected_tiles if holding shift
                 modifiers = QApplication.keyboardModifiers()
                 if modifiers != Qt.ShiftModifier:
                     self.selected_tiles = []
@@ -123,14 +126,36 @@ class Window(QWidget):
         
         else:
             if event.button() == Qt.LeftButton:
-                self.draw_tile(self.selected_sprite, tile_x, tile_y)
+                if self.selected_sprite < 0:
+                    modifiers = QApplication.keyboardModifiers()
+                    if modifiers == Qt.ShiftModifier:
+
+                        self.do_autotiling(tile_x, tile_y, False)
+                    else:
+                        self.do_autotiling(tile_x, tile_y)
+                    self.autotiled_blocks.append((tile_x, tile_y))
+                else:
+                    self.draw_tile(self.selected_sprite, tile_x, tile_y)
+
             elif event.button() == Qt.RightButton:
-                self.draw_tile(self.selected_sprite_alt, tile_x, tile_y)
+                if self.selected_sprite_alt < 0:
+                    modifiers = QApplication.keyboardModifiers()
+                    if modifiers == Qt.ShiftModifier:
+
+                        self.do_autotiling(tile_x, tile_y, False)
+                    else:
+                        self.do_autotiling(tile_x, tile_y)
+                    self.autotiled_blocks.append((tile_x, tile_y))
+                else:
+                    self.draw_tile(self.selected_sprite_alt, tile_x, tile_y)
+
 
             self.button_held = event.button()
             self.drawing = True
 
     def mouseReleaseEvent(self, event):
+
+        self.autotiled_blocks = []
 
         if self.selecting:
             if self.dragging_box:
@@ -177,9 +202,27 @@ class Window(QWidget):
         
         if self.drawing:
             if self.button_held == Qt.LeftButton:
-                self.draw_tile(self.selected_sprite, tile_x, tile_y)
+                if self.selected_sprite < 0:
+                    modifiers = QApplication.keyboardModifiers()
+                    if modifiers == Qt.ShiftModifier:
+
+                        self.do_autotiling(tile_x, tile_y, False)
+                    else:
+                        self.do_autotiling(tile_x, tile_y)
+                    self.autotiled_blocks.append((tile_x, tile_y))
+                else:
+                    self.draw_tile(self.selected_sprite, tile_x, tile_y)
             elif self.button_held == Qt.RightButton:
-                self.draw_tile(self.selected_sprite_alt, tile_x, tile_y)
+                if self.selected_sprite_alt < 0:
+                    modifiers = QApplication.keyboardModifiers()
+                    if modifiers == Qt.ShiftModifier:
+
+                        self.do_autotiling(tile_x, tile_y, False)
+                    else:
+                        self.do_autotiling(tile_x, tile_y)
+                    self.autotiled_blocks.append((tile_x, tile_y))
+                else:
+                    self.draw_tile(self.selected_sprite_alt, tile_x, tile_y)
 
         
         qp = QPainter(pix)
@@ -214,7 +257,10 @@ class Window(QWidget):
                 qp.setOpacity(0.5)
                 qp.drawPixmap(QPoint(paste_x*pixels_per_tile, paste_y*pixels_per_tile),pixmap)
         else:
-            img = self.cart.get_sprite(self.selected_sprite)
+            if self.selected_sprite < 0:
+                img = self.cart.get_sprite(default_values.autotiling_sprites[self.selected_sprite])
+            else:
+                img = self.cart.get_sprite(self.selected_sprite)
             
             qp.setOpacity(0.5)
 
@@ -274,7 +320,46 @@ class Window(QWidget):
         cart = self.cart.save()
         with open("saved.p8", "w+") as f:
             f.write(cart)
+
+    def do_autotiling(self, tile_x, tile_y, globally=True, from_loop=False):
+        # TODO make specific sprite for autotiling
+
+        if tile_x < 0 or tile_y < 0 or tile_x > 15 or tile_y > 15:
+            return
+
+        if self.cart.get_tile(self.selected_level, tile_x, tile_y) in default_values.blocks_bitmasking:
+            return
+
+        north_tile = int(self.cart.get_tile(self.selected_level, tile_x, tile_y+1),16)
+        west_tile = int(self.cart.get_tile(self.selected_level, tile_x+1, tile_y),16)
+        east_tile = int(self.cart.get_tile(self.selected_level, tile_x-1, tile_y),16)
+        south_tile = int(self.cart.get_tile(self.selected_level, tile_x, tile_y-1),16) 
+
+        tiles = [((tile_x, tile_y+1),north_tile), ((tile_x+1, tile_y),west_tile), ((tile_x-1, tile_y),east_tile), ((tile_x, tile_y-1),south_tile)]
+
+        bools = []
+
+        if globally:
+            bools = [i in default_values.blocks_bitmasking for _, i in tiles]
+        else:
+            bools = [ tile_pos in self.autotiled_blocks for tile_pos, i in tiles]
+
         
+
+        tile_index_str = ''.join(['1' if i else '0' for i in bools])
+
+        tile = default_values.blocks_bitmasking[int(tile_index_str, 2)]
+        self.draw_tile(tile, tile_x, tile_y)
+        if not from_loop:
+            if bools[0]:
+                self.do_autotiling(tile_x, tile_y+1, globally, True)
+            if bools[1]:
+                self.do_autotiling(tile_x+1, tile_y, globally, True)
+            if bools[2]:
+                self.do_autotiling(tile_x-1, tile_y, globally, True)
+            if bools[3]:
+                self.do_autotiling(tile_x, tile_y-1, globally, True)
+
             
 
         

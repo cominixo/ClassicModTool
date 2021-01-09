@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import numpy as np
+import default_values
 
 class SpriteLabel(QLabel):
     def __init__(self, parent, spriteid):
@@ -10,6 +11,11 @@ class SpriteLabel(QLabel):
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         self.assigned_button = None
+        self.autotiling = False
+
+        if spriteid < 0:
+            self.autotile_spriteid = default_values.autotiling_sprites[spriteid]
+            self.autotiling = True
 
         self.spriteid = spriteid
         self.draw_image()
@@ -18,8 +24,10 @@ class SpriteLabel(QLabel):
 
     def draw_image(self):
 
-        
-        img = np.array(self.parent().parent().cart.get_sprite(self.spriteid))
+        spriteid = self.spriteid
+        if self.autotiling:
+            spriteid = self.autotile_spriteid
+        img = np.array(self.parent().parent().cart.get_sprite(spriteid))
 
         height, width, channel = img.shape
         bytesPerLine = 3 * width
@@ -31,8 +39,8 @@ class SpriteLabel(QLabel):
 
         self.setPixmap(self.sprites_pixmap)
     
-    # TODO remove rect when another sprite is selected
     def mousePressEvent(self, event):
+        print(self.spriteid)
         if event.button() == Qt.LeftButton:
             self.parent().parent().selected_sprite = self.spriteid
             self.assigned_button = event.button()
