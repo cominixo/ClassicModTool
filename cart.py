@@ -110,6 +110,20 @@ class Cart:
             return "0"
         return str_value
 
+    def edit_sprite(self, color, sprite, x, y):
+
+        x += (sprite%16)*8
+        y += (sprite//16)*8
+
+        color_hex = hex(color)[2:]
+
+        lines = self._gfx.split("\n")[1:]
+
+        lines[y] = lines[y][:x] + color_hex + lines[y][x + 1:]
+
+        self._gfx = "__gfx__\n" + "\n".join(lines)
+        
+
     def edit_tile(self, sprite, level, tile_x, tile_y):
         
 

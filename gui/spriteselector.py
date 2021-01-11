@@ -47,7 +47,6 @@ class SpriteSelector(QLabel):
             
             sprite = self.all_sprites[selected_tab[loaded_sprites]]
             if selected_tab[loaded_sprites] < 0:
-                print(selected_tab[loaded_sprites])
                 sprite = SpriteLabel(self, selected_tab[loaded_sprites])
                 self.all_sprites.append(sprite)
          

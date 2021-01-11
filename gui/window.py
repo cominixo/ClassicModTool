@@ -9,6 +9,7 @@ from gui.leveldisplay import LevelDisplay
 from gui.spriteselector import SpriteSelector
 from gui.spritetab import SpriteTab
 from gui.button import Button
+from gui.sprite.spritewindow import SpriteWindow
 from cart import Cart
 import default_values
 
@@ -58,16 +59,20 @@ class Window(QWidget):
 
         self.button_held = 0
 
+        self.sprite_editor = SpriteWindow(self)
+
         self.selection_button = Button(self, "assets/selection_button", self.setSelecting)
+        self.sprite_button = Button(self, "assets/sprite_button", lambda: self.sprite_editor.show())
 
         
         self.layout.setVerticalSpacing(0)
-        self.layout.addWidget(SpriteTab(self), 0, 1)
-        self.layout.addWidget(self.spriteselector,1,1)
-        self.layout.addWidget(self.selection_button, 2, 1)
-        self.layout.addWidget(self.leveldisplay,1,2,2,2)
-        self.layout.addWidget(self.button_next,3,3)
-        self.layout.addWidget(self.button_back,3,2)
+        self.layout.addWidget(SpriteTab(self), 0, 0,1,3)
+        self.layout.addWidget(self.spriteselector,1,0,3,3)
+        self.layout.addWidget(self.selection_button, 4, 0)
+        self.layout.addWidget(self.sprite_button, 4, 1)
+        self.layout.addWidget(self.leveldisplay,1,2,3,2)
+        self.layout.addWidget(self.button_next,4,3)
+        self.layout.addWidget(self.button_back,4,2)
         self.setLayout(self.layout)
 
 

@@ -5,6 +5,7 @@ from PyQt5.QtCore import *
 class Button(QLabel):
     def __init__(self, parent, image_path, on_click):
         super(Button, self).__init__(parent)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.image_pixmap = QPixmap(image_path).scaled(40,40)
         self.draw_image()
         self.selected = False
