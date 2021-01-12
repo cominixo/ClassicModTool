@@ -42,11 +42,7 @@ class Window(QWidget):
 
         self.button_next = Button(self, "assets/next_arrow", self.nextLevel)
 
-        #self.button_next.clicked.connect(self.nextLevel)
-
         self.button_back = Button(self, "assets/previous_arrow", self.previousLevel)
-
-        #self.button_back.clicked.connect(self.previousLevel)
 
         self.setMouseTracking(True)
 
@@ -382,9 +378,9 @@ class Window(QWidget):
         bools = []
 
         if globally:
-            bools = [i in bitmasking for _, i in tiles]
+            bools = [i in bitmasking and 0 <= tile_pos[0] < 16  and 0 <= tile_pos[1] < 16 for tile_pos, i in tiles]
         else:
-            bools = [ tile_pos in self.autotiled_blocks for tile_pos, i in tiles]
+            bools = [ tile_pos in self.autotiled_blocks and 0 <= tile_pos[0] < 16  and 0 <= tile_pos[1] < 16 for tile_pos, i in tiles]
 
         
 
