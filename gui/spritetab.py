@@ -11,7 +11,6 @@ class SpriteTab(QLabel):
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         
-        # TODO tab for misc
         pixmap = self.make_pixmap()
         self.setPixmap(pixmap)
         

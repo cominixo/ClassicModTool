@@ -1,21 +1,23 @@
-
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 import numpy as np
+import ntpath
 
 from gui.leveldisplay import LevelDisplay
 from gui.spriteselector import SpriteSelector
 from gui.spritetab import SpriteTab
 from gui.button import Button
 from gui.sprite.spritewindow import SpriteWindow
+from gui.popup import Popup
 from cart import Cart
 import default_values
 
 
+
 class Window(QWidget):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, cart, *args, **kwargs):
         QWidget.__init__(self, *args, **kwargs)
 
         self.drawing = False
@@ -23,7 +25,9 @@ class Window(QWidget):
         self.dragging_box = False
         self.selection_box = QRect()
 
-        self.cart = Cart("carts/celeste.p8")
+        self.cart_path = cart
+        self.cart = Cart(self.cart_path)
+        self.setWindowTitle("ClassicModTool - Editing " + ntpath.basename(cart))
 
         self.selected_sprite = 1
         self.selected_sprite_alt = 0
@@ -31,20 +35,18 @@ class Window(QWidget):
         self.selected_sprite_tab = 0
         self.selected_tiles = []
 
-        # TODO see if right clicking works while holding left click
         self.autotiled_blocks = []
 
         self.leveldisplay = LevelDisplay(self)
         self.spriteselector = SpriteSelector(self)
 
-        self.button_next = QPushButton('->', self)
+        self.button_next = Button(self, "assets/next_arrow", self.nextLevel)
 
+        #self.button_next.clicked.connect(self.nextLevel)
 
-        self.button_next.clicked.connect(self.nextLevel)
+        self.button_back = Button(self, "assets/previous_arrow", self.previousLevel)
 
-        self.button_back = QPushButton('<-', self)
-
-        self.button_back.clicked.connect(self.previousLevel)
+        #self.button_back.clicked.connect(self.previousLevel)
 
         self.setMouseTracking(True)
 
@@ -55,6 +57,15 @@ class Window(QWidget):
         self.selectSc = QShortcut(QKeySequence('Shift+S'), self)
         self.selectSc.activated.connect(self.setSelecting)
 
+        self.reloadSc = QShortcut(QKeySequence('Ctrl+R'), self)
+        self.reloadSc.activated.connect(self.reload_cart)
+
+        self.previousLevelSc = QShortcut(Qt.Key_Left, self)
+        self.previousLevelSc.activated.connect(self.previousLevel)
+
+        self.nextLevelSc = QShortcut(Qt.Key_Right, self)
+        self.nextLevelSc.activated.connect(self.nextLevel)
+
         self.layout = QGridLayout()
 
         self.button_held = 0
@@ -64,15 +75,17 @@ class Window(QWidget):
         self.selection_button = Button(self, "assets/selection_button", self.setSelecting)
         self.sprite_button = Button(self, "assets/sprite_button", lambda: self.sprite_editor.show())
 
+        self.popup = Popup(self)
         
         self.layout.setVerticalSpacing(0)
+        self.layout.addWidget(self.popup,0,3)
         self.layout.addWidget(SpriteTab(self), 0, 0,1,3)
         self.layout.addWidget(self.spriteselector,1,0,3,3)
         self.layout.addWidget(self.selection_button, 4, 0)
         self.layout.addWidget(self.sprite_button, 4, 1)
         self.layout.addWidget(self.leveldisplay,1,2,3,2)
-        self.layout.addWidget(self.button_next,4,3)
-        self.layout.addWidget(self.button_back,4,2)
+        self.layout.addWidget(self.button_next,4,4)
+        self.layout.addWidget(self.button_back,4,3)
         self.setLayout(self.layout)
 
 
@@ -89,13 +102,13 @@ class Window(QWidget):
 
         return self.selecting
 
-    def nextLevel(self, event):
+    def nextLevel(self):
         self.selected_level += 1
         self.selected_level %= 32
         self.cart.load_map()
         self.leveldisplay.draw_image()
 
-    def previousLevel(self, event):
+    def previousLevel(self):
         self.selected_level -= 1
         self.selected_level %= 32
         self.cart.load_map()
@@ -329,13 +342,24 @@ class Window(QWidget):
         
         return qimg
 
+    def reload_cart(self):
+        self.cart = Cart(self.cart_path)
+        self.cart.load_spritesheet()
+        self.cart.load_map()
+        
+        self.leveldisplay.draw_image()
+        for sprite in self.spriteselector.all_sprites:
+            sprite.draw_image()
+        self.popup.showPopup("reloaded")
+
     def save_cart(self):
         cart = self.cart.save()
-        with open("saved.p8", "w+") as f:
+        with open(self.cart_path, "w+") as f:
             f.write(cart)
 
+        self.popup.showPopup("saved")
+
     def do_autotiling(self, sprite, tile_x, tile_y, globally=True, from_loop=False):
-        # TODO make specific sprite for autotiling
 
         if sprite < 0:
             sprite = abs(sprite)-1

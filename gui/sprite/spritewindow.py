@@ -12,6 +12,8 @@ class SpriteWindow(QWidget):
     def __init__(self, parent, *args, **kwargs):
         QWidget.__init__(self, *args, **kwargs)
 
+        self.setWindowTitle("ClassicModTool - Editing Spritesheet")
+
         self.layout = QGridLayout()
         self.parent = parent
 

@@ -45,7 +45,6 @@ class SpriteDrawer(QLabel):
     def mouseReleaseEvent(self,event):
         self.drawing = False
         
-
         self.parent().parent.cart.load_spritesheet()
         self.parent().parent.cart.load_map()
         

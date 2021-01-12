@@ -33,14 +33,20 @@ class SpriteLabel(QLabel):
         bytesPerLine = 3 * width
         qImg = QImage(img.data.tobytes(), width, height, bytesPerLine, QImage.Format_RGB888)
         qImg = qImg.scaled(QSize(40,40), aspectRatioMode=Qt.KeepAspectRatio)
-        
+        pixmap = QPixmap().fromImage(qImg)
 
-        self.sprites_pixmap = QPixmap().fromImage(qImg)
+        if self.spriteid < 0:
+            qp = QPainter(pixmap)
+            qp.drawText(0,15, "AUTO")
+            qp.end()
+
+
+        self.sprites_pixmap = pixmap
+        
 
         self.setPixmap(self.sprites_pixmap)
     
     def mousePressEvent(self, event):
-        print(self.spriteid)
         if event.button() == Qt.LeftButton:
             self.parent().parent().selected_sprite = self.spriteid
             self.assigned_button = event.button()
