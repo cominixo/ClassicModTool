@@ -56,6 +56,9 @@ class Window(QWidget):
         self.reloadSc = QShortcut(QKeySequence('Ctrl+R'), self)
         self.reloadSc.activated.connect(self.reload_cart)
 
+        self.undoSc = QShortcut(QKeySequence("Ctrl+Z"), self)
+        self.undoSc.activated.connect(self.undo)
+
         self.previousLevelSc = QShortcut(Qt.Key_Left, self)
         self.previousLevelSc.activated.connect(self.previousLevel)
 
@@ -112,6 +115,11 @@ class Window(QWidget):
 
     def resizeEvent(self, event):
         self.leveldisplay.setPixmap(self.scale_pixmap())
+
+    def undo(self):
+        self.cart.past_states.pop(-1)
+        self.cart.undo()
+        self.leveldisplay.draw_image()
 
     def mousePressEvent(self, event):
         mouse_pos = self.get_mouse_pos(event.globalPos())
@@ -340,8 +348,7 @@ class Window(QWidget):
 
     def reload_cart(self):
         self.cart = Cart(self.cart_path)
-        self.cart.load_spritesheet()
-        self.cart.load_map()
+
         
         self.leveldisplay.draw_image()
         for sprite in self.spriteselector.all_sprites:

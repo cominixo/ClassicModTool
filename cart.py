@@ -18,6 +18,8 @@ class Cart:
 
         self.load_map()
 
+        self.past_states = [{"gfx": self._gfx, "map": self._map}]
+
 
         
     def split_cart(self):
@@ -122,11 +124,23 @@ class Cart:
         lines[y] = lines[y][:x] + color_hex + lines[y][x + 1:]
 
         self._gfx = "__gfx__\n" + "\n".join(lines)
-        
+
+    def undo(self):
+        last_state = self.past_states[-1]
+        self.past_states.pop(-1)
+
+        self._map = last_state["map"]
+        self._gfx = last_state["gfx"]
+
+        self.load_map()
+
 
     def edit_tile(self, sprite, level, tile_x, tile_y):
         
 
+        old_map = self._map
+        old_gfx = self._gfx
+        
         sprite_hex = '{:02x}'.format(sprite)
 
         is_extended = False
@@ -169,11 +183,13 @@ class Cart:
 
             self._extended_map = "\n".join(celeste_map)
 
-
-           
         else:
             self._map = "__map__" + "\n" + "\n".join(celeste_map)
 
+        if self._map != old_map or self._gfx != old_gfx:
+            if len(self.past_states) > 256:
+                self.past_states.pop(0)
+            self.past_states.append({"map":self._map, "gfx":self._gfx})
         
         
 
