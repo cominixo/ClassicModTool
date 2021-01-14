@@ -1,6 +1,8 @@
 # ClassicModTool
 A Level/Sprite Editor for Celeste Classic (WIP)
 
+Try to use this to edit copies of carts (or have backups of it), no idea if it could do anything bad to the cart somehow (though it should work fine from what I tested).
+
 ## Useful Shortcuts
 
 - Ctrl+S to Save
