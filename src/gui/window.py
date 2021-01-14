@@ -357,7 +357,7 @@ class Window(QWidget):
 
     def save_cart(self):
         cart = self.cart.save()
-        with open(self.cart_path, "w+") as f:
+        with open(self.cart_path, "w+", encoding="utf-8") as f:
             f.write(cart)
 
         self.popup.showPopup("saved")

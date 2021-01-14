@@ -8,7 +8,7 @@ class Cart:
     loaded_spritesheet = np.zeros((128, 128, 3), dtype=np.uint8)
     
     def __init__(self, cart_path):
-        with open(cart_path, "r") as f:
+        with open(cart_path, "r",encoding="utf-8") as f:
             self.cart = f.read()
 
         self.split_cart()
