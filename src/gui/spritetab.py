@@ -5,6 +5,8 @@ from PyQt5.QtCore import *
 from PIL import Image
 import numpy as np
 
+import utils
+
 class SpriteTab(QLabel):
     def __init__(self, parent):
         super(SpriteTab, self).__init__(parent)
@@ -17,8 +19,8 @@ class SpriteTab(QLabel):
         self.resize(pixmap.width(),pixmap.height())
 
     def make_pixmap(self) -> QPixmap:
-        unselected = Image.open('assets/tab-unselected.png').resize((32,32), Image.NEAREST)
-        selected = Image.open('assets/tab-selected.png').resize((32,32), Image.NEAREST)
+        unselected = Image.open(utils.fix_path('./assets/tab-unselected.png')).resize((32,32), Image.NEAREST)
+        selected = Image.open(utils.fix_path('./assets/tab-selected.png')).resize((32,32), Image.NEAREST)
 
 
         final = Image.new('RGBA', (144, 32))

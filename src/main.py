@@ -7,9 +7,11 @@ import sys
 from gui.window import Window
 from gui.sprite.spritewindow import SpriteWindow
 
+import utils
+
 from pathlib import Path
 import platform
-import os 
+import os
 
 app = QApplication(sys.argv)
 
@@ -32,7 +34,7 @@ if not os.path.exists(carts_path):
     carts_path = str(Path.home())
 
 
-fontid = QFontDatabase.addApplicationFont("assets/pico-8.ttf")
+fontid = QFontDatabase.addApplicationFont(utils.fix_path("./assets/pico-8.ttf"))
 fontstr = QFontDatabase.applicationFontFamilies(fontid)[0]
 font = QFont(fontstr, 10)
 app.setFont(font)

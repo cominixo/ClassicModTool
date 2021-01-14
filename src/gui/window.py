@@ -40,9 +40,9 @@ class Window(QWidget):
         self.leveldisplay = LevelDisplay(self)
         self.spriteselector = SpriteSelector(self)
 
-        self.button_next = Button(self, "assets/next_arrow", self.nextLevel)
+        self.button_next = Button(self, "./assets/next_arrow.png", self.nextLevel)
 
-        self.button_back = Button(self, "assets/previous_arrow", self.previousLevel)
+        self.button_back = Button(self, "./assets/previous_arrow.png", self.previousLevel)
 
         self.setMouseTracking(True)
 
@@ -71,8 +71,8 @@ class Window(QWidget):
 
         self.sprite_editor = SpriteWindow(self)
 
-        self.selection_button = Button(self, "assets/selection_button", self.setSelecting)
-        self.sprite_button = Button(self, "assets/sprite_button", lambda: self.sprite_editor.show())
+        self.selection_button = Button(self, "./assets/selection_button.png", self.setSelecting)
+        self.sprite_button = Button(self, "./assets/sprite_button.png", lambda: self.sprite_editor.show())
 
         self.popup = Popup(self)
         

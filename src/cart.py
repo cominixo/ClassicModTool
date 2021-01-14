@@ -136,6 +136,11 @@ class Cart:
         self._map = last_state["map"]
         self._gfx = last_state["gfx"]
 
+        
+        self.load_spritesheet()
+        self._extended_map = "".join(self._gfx.split("\n")[(SPRITESHEET_SIZE//2)+1:])
+        self.load_extended_map()
+
         self.load_map()
 
         self.past_states.pop(-1)
