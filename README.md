@@ -9,4 +9,5 @@ A Level/Sprite Editor for Celeste Classic (WIP)
 
 - Shift+S to toggle selecting, which only copies tiles for now.
 - While pasting selected tiles, holding Shift will allow you to paste multiple times.
+- While autotiling, holding shift will make the tiles only autotile with eachother.
 - Arrow Keys to go Back/Forward through levels.
