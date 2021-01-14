@@ -44,7 +44,7 @@ class Cart:
         lines = self._gfx.split("\n")[1:]
         for y in range(len(lines)):
             for x in range(len(lines[y])):
-                self.loaded_spritesheet[x,y] = P8_COLORS[int(lines[x][y], 16)]
+                self.loaded_spritesheet[y,x] = P8_COLORS[int(lines[y][x], 16)]
 
     def save(self):
         self._gfx += "\n"
