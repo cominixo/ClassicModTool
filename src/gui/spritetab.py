@@ -23,9 +23,9 @@ class SpriteTab(QLabel):
         selected = Image.open(utils.fix_path('./assets/tab-selected.png')).resize((32,32), Image.NEAREST)
 
 
-        final = Image.new('RGBA', (144, 32))
+        final = Image.new('RGBA', (184, 32))
 
-        for tab in range(4):
+        for tab in range(5):
             if self.parent().selected_sprite_tab == tab:
                 final.paste(selected, (tab*40, 0))
             else:
