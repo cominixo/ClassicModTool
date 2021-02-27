@@ -65,6 +65,12 @@ class Window(QWidget):
         self.nextLevelSc = QShortcut(Qt.Key_Right, self)
         self.nextLevelSc.activated.connect(self.nextLevel)
 
+        self.mapDownSc = QShortcut(Qt.Key_Down, self)
+        self.mapDownSc.activated.connect(self.mapDown)
+
+        self.mapUpSc = QShortcut(Qt.Key_Up, self)
+        self.mapUpSc.activated.connect(self.mapUp)
+
         self.layout = QGridLayout()
 
         self.button_held = 0
@@ -109,6 +115,18 @@ class Window(QWidget):
 
     def previousLevel(self):
         self.selected_level -= 1
+        self.selected_level %= 32
+        self.cart.load_map()
+        self.leveldisplay.draw_image()
+
+    def mapDown(self):
+        self.selected_level += 8
+        self.selected_level %= 32
+        self.cart.load_map()
+        self.leveldisplay.draw_image()
+
+    def mapUp(self):
+        self.selected_level -= 8
         self.selected_level %= 32
         self.cart.load_map()
         self.leveldisplay.draw_image()

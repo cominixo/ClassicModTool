@@ -8,7 +8,7 @@ background = [16, 40, 41, 42, 56, 57, 58, 88, 103, 104, 44, 60, 61, 62, 63, 70, 
               87]
 
 misc = [i for i in range(128) if i not in background and i not in blocks and i not in objects]
-map_sprites = [i for i in range(256) if i not in background and i not in blocks and i not in objects and i not in misc]
+map_sprites = [i for i in range(128, 256) if i not in background and i not in blocks and i not in objects and i not in misc]
 
 all_sprites = objects + blocks + background + misc + map_sprites
 
